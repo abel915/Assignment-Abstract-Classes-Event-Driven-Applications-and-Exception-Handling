@@ -1,0 +1,268 @@
+﻿@page "/flt"
+@using MauiApp2.Data
+@using System.Diagnostics
+
+<h2 style="text-align: center;">Flight Finder</h2>
+
+
+<table width="100%">
+    <tr>
+        <td>From: <input placeholder="Any" @bind="flt_ipt_frm" /></td>
+        <td>To:   <input placeholder="Any" @bind="flt_ipt_to" /></td>
+        <td>Day:  <input placeholder="Any" @bind="flt_ipt_day" /></td>
+        <td><button class="btn btn-primary" @onclick="FndFlt">Find Flight</button></td>
+    </tr>
+</table>
+<!
+@if (lines.Count > 0)
+{
+    <br>
+    <h3 style="text-align: center;">Flights</h3>
+    <table width="100%" class="table table-striped" style="border: 1px solid gray;padding: 5px;" height="200px">
+        @for (int i = 0; i < Math.Min(6, lines.Count); i++)
+        {
+           var tmp_ln = lines[i];
+           @if (i % 2 == 1)
+           {
+                            <tr @onclick="@(() => ShwDtls(tmp_ln))" style="background: lightgray"><td style="vertical-align: top;">@(i + 1)</td><td style="vertical-align: top;">@lines[i]</td></tr>
+           }else{
+                <tr @onclick="@(() => ShwDtls(tmp_ln))"><td style="vertical-align: top;">@(i + 1)</td><td style="vertical-align: top;">@lines[i]</td></tr>
+           }
+        }
+        @if (lines.Count < 7){
+            <tr><td>&nbsp;</td><td></td></tr>
+            @if (lines.Count < 6){
+                <tr><td>&nbsp;</td><td></td></tr>
+                @if (lines.Count < 5){
+                    <tr><td>&nbsp;</td><td></td></tr>
+                    @if (lines.Count < 4){
+                        <tr><td>&nbsp;</td><td></td></tr>
+                        @if (lines.Count < 3){
+                            <tr><td>&nbsp;</td><td></td></tr>
+                            @if (lines.Count < 2){
+                                <tr><td>&nbsp;</td><td></td></tr>
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        @if (lines.Count > 6){
+            <tr><td>...</td><td>...</td></tr>
+        }
+    </table>
+}
+else if (_onload)
+{
+    <br>
+    <h3 style="text-align: center;">Flights</h3>
+    <table width="100%" height="200px">
+        <tr style="border: 1px solid gray;padding: 5px;"><td style="text-align: center;vertical-align: top;"></td></tr>
+    </table>
+}
+else
+{
+    <br>
+    <h3 style="text-align: center;">Flights</h3>
+    <table width="100%" height="200px">
+        <tr style="border: 1px solid gray;padding: 5px;"><td style="text-align: center;vertical-align: top;">Flight not Found!</td></tr>
+    </table>
+
+}
+
+
+@if (lines.Count > 0)
+{
+    <br>
+    <h3 style="text-align: center;">Reserve</h3>
+    <table width="100%">
+        <tr><td width="140px"
+                style="text-align: right">Flight Code :</td><td width="10px"></td><td><input readonly style="width: 100%;" value = "@_flt.Flt_dtl_code"></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Airline     :</td><td             ></td><td><input readonly style="width: 100%;" value = "@_flt.Flt_dtl_line"></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Day         :</td><td             ></td><td><input readonly style="width: 100%;" value = "@_flt.Flt_dtl_date"></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Time        :</td><td             ></td><td><input readonly style="width: 100%;" value = "@_flt.Flt_dtl_time"></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Cost        :</td><td             ></td><td><input readonly style="width: 100%;" value = "@_flt.Flt_dtl_cost"></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Name        :</td><td             ></td><td><input          style="width: 100%;"    @bind="_flt.Flt_dtl_name"></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Citizenship :</td><td             ></td><td><input          style="width: 100%;"    @bind="_flt.Flt_dtl_ctzn"></td></tr><tr height="10px"><td></td><td></td></tr>
+
+    </table>
+    <br />
+    <table width="100%">
+        <tr><td style="text-align: center"><button class="btn btn-primary" style="display: block; margin:auto;" @onclick="RsvFlt">Reserve</button></td></tr>
+    </table>
+    <table width="100%">
+        <tr><td width="50%" style="text-align: right">Reservation Code: </td><td width="50%" style="text-align: left">@_flt.Flt_rsv_code</td></tr>
+    </table>
+}
+else
+{
+    <br>
+    <h3 style="text-align: center;">Reserve</h3>
+    <table width="100%">
+        <tr><td width="140px"
+                style="text-align: right">Flight Code :</td><td width="10px"></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Airline     :</td><td             ></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Day         :</td><td             ></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Time        :</td><td             ></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Cost        :</td><td             ></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Name        :</td><td             ></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Citizenship :</td><td             ></td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+    </table>
+}
+
+
+@code {
+    private string? flt_ipt_frm;
+    private string? flt_ipt_to;
+    private string? flt_ipt_day;
+
+    private bool ifRsv41stTime = true;
+
+    private FltVal _flt = new FltVal();
+    private bool _onload = true;
+
+    private List<string> lines = new List<string>();
+
+
+    private async Task RsvFlt()
+    {
+        if (!ifRsv41stTime)
+        {
+            await Application.Current.MainPage.DisplayAlert($"Reserve Failed", $"Already Reserved!", "Ok");
+            return;
+        }
+        else
+        {
+            ifRsv41stTime = false;
+        }
+        if (
+            string.IsNullOrEmpty(_flt.Flt_dtl_code) ||
+            string.IsNullOrEmpty(_flt.Flt_dtl_line) ||
+            string.IsNullOrEmpty(_flt.Flt_dtl_name) ||
+            string.IsNullOrEmpty(_flt.Flt_dtl_ctzn) ||
+            string.IsNullOrEmpty(_flt.Flt_rsv_code))
+        {
+            await Application.Current.MainPage.DisplayAlert($"Reserve Failed", $"Some of the fileds are empty, please verify!", "Ok");
+            return;
+        }
+        using (StreamWriter writer = new StreamWriter(Path.Combine(FileSystem.Current.AppDataDirectory, "T_T.csv"), append: true))
+        {
+            Debug.WriteLine("##: ##: Using StreamWriter! Ready to append to: " + Path.Combine(FileSystem.Current.AppDataDirectory, "T_T.csv"));
+            writer.WriteLine(
+                    _flt.Flt_rsv_code + "," +
+                    _flt.Flt_dtl_code + "," +
+                    _flt.Flt_dtl_line + "," +
+                    _flt.Flt_dtl_date + "," +
+                    _flt.Flt_dtl_cost + "," +
+                    _flt.Flt_dtl_name + "," +
+                    _flt.Flt_dtl_ctzn + ",Active");
+            Debug.WriteLine(_flt.Flt_dtl_name);
+            Debug.WriteLine("##: Done appending!");
+        }
+    }
+
+    private bool ShwDtls(string _ln)
+    {
+        ifRsv41stTime = true;
+        _flt.Flt_dtl_code = _ln.Split(',')[0];
+        _flt.Flt_dtl_line = _ln.Split(',')[1];
+        _flt.Flt_dtl_date = _ln.Split(',')[4];
+        _flt.Flt_dtl_time = _ln.Split(',')[5];
+        _flt.Flt_dtl_cost = _ln.Split(',')[7];
+        _flt.Flt_dtl_name = ""; 
+        _flt.Flt_dtl_ctzn = ""; 
+        var random = new Random();
+        int num = random.Next(0, 26); 
+        _flt.Flt_rsv_code = (char)('A' + num) + String.Format("{0:D4}", random.Next(0,9999));
+        return true;
+    }
+
+    private async Task FndFlt(){
+        _onload = false;
+        lines.Clear();
+
+        _flt.Flt_dtl_code = "";
+        _flt.Flt_dtl_line = "";
+        _flt.Flt_dtl_date = "";
+        _flt.Flt_dtl_time = "";
+        _flt.Flt_dtl_cost = "";
+        _flt.Flt_dtl_name = "";
+        _flt.Flt_dtl_ctzn = "";
+        _flt.Flt_dtl_stat = "";
+
+        using var fileStream = await FileSystem.OpenAppPackageFileAsync("flights.csv");
+        using var reader = new StreamReader(fileStream);
+        string line = "";
+        while (reader.Peek() >= 0){
+            bool flg1, flg2, flg3;
+            line = reader.ReadLine();
+            if (string.IsNullOrEmpty(line))
+            {
+                continue;
+            }
+            if (string.IsNullOrWhiteSpace(flt_ipt_frm))
+            {
+                flg1 = true;
+            }else{
+                if (((line.Split(',')[2]).ToLower()).Contains(flt_ipt_frm.ToLower())){
+                    flg1 = true;
+                }else{
+                    flg1 = false;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(flt_ipt_to))
+            {
+                flg2 = true;
+            }else{
+                if (line.Split(',')[3].ToLower().Contains(flt_ipt_to.ToLower())){
+                    flg2 = true;
+                }else{
+                    flg2 = false;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(flt_ipt_day))
+            {
+                flg3 = true;
+            }else{
+                if (line.Split(',')[4].ToLower().Contains(flt_ipt_day.ToLower())){
+                    flg3 = true;
+                }else{
+                    flg3 = false;
+                }
+            }
+
+            if (flg1 && flg2 && flg3){
+                lines.Add(line);
+               
+            }
+        }
+    }
+
+    private class FltVal
+    {
+        public string Flt_rsv_code { get; set; }
+        public string Flt_dtl_code { get; set; }
+        public string Flt_dtl_line { get; set; }
+        public string Flt_dtl_date { get; set; }
+        public string Flt_dtl_time { get; set; }
+        public string Flt_dtl_cost { get; set; }
+        public string Flt_dtl_name { get; set; }
+        public string Flt_dtl_ctzn { get; set; }
+        public string Flt_dtl_stat { get; set; }
+
+        public FltVal()
+        {
+            Flt_rsv_code = "";
+            Flt_dtl_code = "";
+            Flt_dtl_line = "";
+            Flt_dtl_date = "";
+            Flt_dtl_time = "";
+            Flt_dtl_cost = "";
+            Flt_dtl_name = "";
+            Flt_dtl_ctzn = "";
+            Flt_dtl_stat = "";
+        }
+    }
+}

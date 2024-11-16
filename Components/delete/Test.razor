@@ -1,0 +1,229 @@
+﻿@page "/test"
+@using MauiApp2.Data
+@using BlazorHybridApp.Data
+
+<h2 style="text-align: center;">Reservation Finder</h2>
+
+<table width="100%">
+    <tr>
+        <td>Code:    <input placeholder="Any" @bind="flt_ipt_rsv_code" /></td>
+        <td>Airline: <input placeholder="Any" @bind="flt_ipt_flt_line" /></td>
+        <td>Name:    <input placeholder="Any" @bind="flt_ipt_cstm_name" /></td>
+        <td><button @onclick="FindSrv">Find Reservation</button></td>
+    </tr>
+</table>
+@if (lines.Count > 0)
+{
+    <br>
+    <h3 style="text-align: center;">Reservations</h3>
+    <table width="100%" class="table table-striped" style="border: 1px solid gray;padding: 5px;" height="200px">
+        @for (int i = 0; i < Math.Min(6, lines.Count); i++)
+        {
+           var tmp_ln = lines[i];
+           @if (i % 2 == 1)
+           {
+                <tr @onclick="@(() => showDetails(tmp_ln))" style="background: lightgray"><td>@(i + 1)</td><td>@lines[i]</td></tr>
+           }else{
+                <tr @onclick="@(() => showDetails(tmp_ln))"><td>@(i + 1)</td><td>@lines[i]</td></tr>
+           }
+        }
+        @if (lines.Count > 5){
+            <tr><td>...</td></tr>
+        }
+    </table>
+}
+else
+{
+    <br>
+    <h3 style="text-align: center;">Flights</h3>
+    <table width="100%" height="200px">
+        <tr style="border: 1px solid gray;padding: 5px;"><td style="text-align: center">Flight not Found!</td></tr>
+    </table>
+}
+
+@if (lines.Count > 0)
+{
+    <br>
+    <h3 style="text-align: center;">Reserve</h3>
+    <table width="100%">
+        <tr><td width="15%"
+                style="text-align: right">Reservation Code :</td><td width="3%">
+            </td>
+            <td><input readonly style="width: 100%;" bind="@_flt.flt_rsv_code"></td>
+        </tr>
+        <tr height="15px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Flight Code      :</td><td></td><td><input readonly style="width: 100%;" value="bind@_flt.flt_dtl_code"></td></tr>
+        <tr height="15px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Airline          :</td><td></td><td><input readonly style="width: 100%;" value="bind@_flt.flt_dtl_line"></td></tr>
+        <tr height="15px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Cost             :</td><td></td><td><input readonly style="width: 100%;" value="bind@_flt.flt_dtl_cost"></td></tr>
+        <tr height="15px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Name             :</td><td></td><td><input style="width: 100%;" value="bind@_flt.flt_dtl_name"></td></tr>
+        <tr height="15px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Citizenship      :</td><td></td><td><input style="width: 100%;" value="bind@_flt.flt_dtl_ctzn"></td></tr>
+        <tr height="15px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Status           :</td><td></td><td><input readonly style="width: 100%;" value="bind@_flt.flt_dtl_stat"></td></tr>
+        <tr height="15px"><td></td><td></td></tr>
+
+    </table>
+    <br />
+    <table width="100%">
+        <tr><td style="text-align: center"><button class="btn btn-primary" style="display: block; margin:auto;" @onclick="UpdateRsv">Reserve</button></td></tr>
+    </table>
+}
+else
+{
+    <br>
+    <h3 style="text-align: center;">Reserve</h3>
+    <table width="100%">
+        <tr><td width="15%"
+                style="text-align: right">Reservation Code :</td><td width="3%">
+                                                                     </td><td><input readonly style="width: 100%;" value = ""></td></tr><tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Flight Code      :</td><td></td><td><input placeholder ="width: 100%;" value=""></td></tr>
+        <tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Airline          :</td><td></td><td><input placeholder="width: 100%;" value=""></td></tr>
+        <tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Cost             :</td><td></td><td><input placeholder="width: 100%;" value=""></td></tr>
+        <tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Name             :</td><td></td><td><input placeholder="width: 100%;" value=""></td></tr>
+        <tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Citizenship      :</td><td></td><td><input placeholder="width: 100%;" value=""></td></tr>
+        <tr height="10px"><td></td><td></td></tr>
+        <tr><td style="text-align: right">Status           :</td><td></td><td><input placeholder="width: 100%;" value=""></td></tr>
+        <tr height="10px"><td></td><td></td></tr>
+        
+
+    </table>
+}
+
+
+@code {
+    private ReservationManager rm = new ReservationManager();
+
+    private string? flt_ipt_rsv_code;
+    private string? flt_ipt_flt_line;
+    private string? flt_ipt_cstm_name;
+
+    private FltC _flt = new FltC();
+
+    private List<string> lines = new List<string>();
+
+    private class FltC{
+        public string flt_rsv_code { get; set; }
+        public string flt_dtl_code { get; set; }
+        public string flt_dtl_line { get; set; }
+        public string flt_dtl_date { get; set; }
+        public string flt_dtl_time { get; set; }
+        public string flt_dtl_cost { get; set; }
+        public string flt_dtl_name { get; set; }
+        public string flt_dtl_ctzn { get; set; }
+        public string flt_dtl_stat { get; set; }
+
+        public FltC()
+        {
+            flt_rsv_code = "";
+            flt_dtl_code = "";
+            flt_dtl_line = "";
+            flt_dtl_date = "";
+            flt_dtl_time = "";
+            flt_dtl_cost = "";
+            flt_dtl_name = "";
+            flt_dtl_ctzn = "";
+            flt_dtl_stat = "";
+        }
+    }
+
+    private async Task UpdateRsv()
+    {
+        if (
+            string.IsNullOrEmpty(_flt.flt_dtl_code) ||
+            string.IsNullOrEmpty(_flt.flt_dtl_line) ||
+            string.IsNullOrEmpty(_flt.flt_dtl_name) ||
+            string.IsNullOrEmpty(_flt.flt_dtl_ctzn) ||
+            string.IsNullOrEmpty(_flt.flt_rsv_code))
+        {
+            throw new Exception("asdf");
+        }
+
+    }
+
+    private bool showDetails(string _ln)
+    {
+       
+        _flt.flt_dtl_code = _ln.Split(',')[0];
+        _flt.flt_dtl_line = _ln.Split(',')[1];
+        _flt.flt_dtl_date = _ln.Split(',')[4];
+        _flt.flt_dtl_time = _ln.Split(',')[5];
+        _flt.flt_dtl_cost = _ln.Split(',')[7];
+        
+
+        return true;
+    }
+
+    private async Task FindSrv()
+    {
+        lines.Clear();
+
+        _flt.flt_dtl_code = "";
+        _flt.flt_dtl_line = "";
+        _flt.flt_dtl_date = "";
+        _flt.flt_dtl_time = "";
+        _flt.flt_dtl_cost = "";
+        _flt.flt_dtl_name = "";
+        _flt.flt_dtl_ctzn = "";
+        _flt.flt_dtl_stat = "";
+
+        using var fileStream = await FileSystem.OpenAppPackageFileAsync("flights.csv");
+        using var reader = new StreamReader(fileStream);
+       
+        string line = "";
+        while (reader.Peek() >= 0){
+            bool flg1, flg2, flg3;
+            line = reader.ReadLine();
+            if (string.IsNullOrEmpty(line))
+            {
+                continue;
+            }
+            if (string.IsNullOrWhiteSpace(flt_ipt_rsv_code))
+            {
+                flg1 = true;
+            }else{
+                if (((line.Split(',')[2]).ToLower()).Contains(flt_ipt_rsv_code.ToLower()))
+                {
+                    flg1 = true;
+                }else{
+                    flg1 = false;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(flt_ipt_flt_line))
+            {
+                flg2 = true;
+            }else{
+                if (line.Split(',')[3].ToLower().Contains(flt_ipt_flt_line.ToLower()))
+                {
+                    flg2 = true;
+                }else{
+                    flg2 = false;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(flt_ipt_cstm_name))
+            {
+                flg3 = true;
+            }else{
+                if (line.Split(',')[4].ToLower().Contains(flt_ipt_cstm_name.ToLower()))
+                {
+                    flg3 = true;
+                }else{
+                    flg3 = false;
+                }
+            }
+
+            if (flg1 && flg2 && flg3){
+                lines.Add(line);
+           
+            }
+        }
+    }
+}
